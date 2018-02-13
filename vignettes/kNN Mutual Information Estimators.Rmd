@@ -1,0 +1,81 @@
+---
+title: "kNN Mutual Information Estimators"
+author: "Isaac J. Michaud"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{kNN Mutual Information Estimators}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The goal of this work is to introduce basic kNN estimators of mutual information and give a few examples of how to utilize. This document is the draft of an R package vignette.Mutual information is important measures dependence in ways that are not linear like correlations. 
+
+## Mutual Information
+
+Mutual information is an information theoretic quantity that measures the dependence between two random variables by quantifying the amount of information (in terms of Shannon entropy) knowledge of one variable provides about the other. The mutual information between two random variables $X$ and $Y$ is defined by
+
+\begin{equation}
+  f\left(k\right) = \binom{n}{k} p^k\left(1-p\right)^{n-k}
+  (\#eq:binom)
+\end{equation}
+
+$$ I(X;Y) =\int \int \log \left \{ \frac{f_{xy}(x,y)}{f_{x}(x)f_{y}(y)} \right \} f_{xy}(x,y) dy dx, $$ 
+
+where $f_x$ and $f_y$ are the marginal densities of $X$ and $Y$, respectively. If $X$ and $Y$ are independent then $f(x,y)_{xy} = f_x(x)f_y(y)$ and $I(X;Y) = 0$, so knowledge of one variable provides no information about the other. If $X$ and $Y$ are dependent then $I(X;Y) > 0$ and represents the expected difference in entropy between $Y$ and $Y|X$ and as such is also the expected Kullback-Leibler divergence between the marginal density $f_y$ and the conditional density $f_{y|x}$. \@ref(eq:binom)
+
+## kNN Algorithms
+
+### $KSG_1$
+
+### $KSG_2$
+
+### $LNC$
+
+### $iLNC$
+
+### $LNN$ 
+
+## Bivariate Normals
+
+The mutual information between two 
+
+## Functional Relationships
+
+That paper did some functional relationship and whatnot, I can 
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Experimental Design
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

@@ -1,0 +1,9 @@
+#PKG_LIBS = -Llib -lmgwANN
+PKG_CPPFLAGS = -Iinclude -DUSING_R -DUSING_RPRINT -I. -I..
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+#clean after building
+all: $(SHLIB) clean
+
+clean: $(SHLIB)
+	$(RM) *.o core

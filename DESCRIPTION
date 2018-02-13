@@ -1,0 +1,16 @@
+Package: rmi
+Type: Package
+Title: Mutual information estimators
+Version: 0.1.0
+Author: Isaac Michaud cre, aut
+Maintainer: Isaac Michaud <ijmichau@ncsu.edu>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: LGPL-3 + file LICENCE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+LinkingTo: Rcpp, RcppArmadillo, BH
+Imports: Rcpp, RcppArmadillo, BH
+Depends: Rcpp
+Suggests: testthat
