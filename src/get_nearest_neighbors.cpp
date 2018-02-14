@@ -3,7 +3,6 @@
 
 using namespace std;
 
-// [[Rcpp::export]]
 void get_nearest_neighbors(arma::mat X,
                            arma::mat&  X_dist,
                            arma::imat& X_inds,
@@ -44,6 +43,16 @@ void get_nearest_neighbors(arma::mat X,
 
   return;
 }
+
+
+/**
+ C++ function that gets nearest neighbors
+Isaac Michaud - 02/14/2018
+
+@param  data matrix
+@param  k number of neighbors
+@return list with C++ indices and max norm distances
+*/
 
 
 // [[Rcpp::export]]

@@ -6,13 +6,42 @@
 #include "lnc_compute.h"
 using namespace std;
 
-//' mutual information function
+//' kNN Mutual Information Estimators
 //'
-//' @param x numeric vector
-//' @param low lower bound
-//' @param high upper bound
-//' @param res bounded numeric vector
-//' @return bounded numeric vector
+//' Computes mutual information based on the distribution of nearest neighborhood distances as described by Kraskov, et. al (2004).
+//'
+//' @param  data matrix. Each row is an observation.
+//' @param  splits vector. Describes which sets of columns in \code{data} to compute the mutual information between. For example, to compute mutual information between two variables use \code{splits = c(1,1)}. To compute \emph{redundancy} among multiple random variables use \code{splits = rep(1,ncol(data))}. To compute the mutual information between two random vector list the dimensions of each vector.
+//' @param  options list. Specifies estimator and necessary parameters. See Details.
+//' @section Details: Current types of methods that are available are methods LNC, KSG1 and KSG2
+//' \code{list(method = "KSG2", k = 6)}
+//' @return estimated mutual information
+//' @section Author:
+//' Isaac Michaud, North Carolina State University, \email{ijmichau@ncsu.edu}
+//' @section References:
+//' Gao, Shuyang, Greg Ver Steeg, and Aram Galstyan. 2015. "Efficient estimation of mutual information for strongly dependent variables." Artificial Intelligence and Statistics: 277-286.
+//'
+//' Kraskov, Alexander, Harald Stogbauer, and Peter Grassberger. 2004. "Estimating mutual information." Physical review E 69(6): 066138.
+//'
+//' @examples
+//' set.seed(123)
+//' x <- rnorm(1000)
+//' y <- x + rnorm(1000)
+//' knn_mi(cbind(x,y),c(1,1),options = list(method = "KSG2", k = 6))
+//'
+//' set.seed(123)
+//' x <- rnorm(1000)
+//' y <- 100*x + rnorm(1000)
+//' knn_mi(cbind(x,y),c(1,1),options = list(method = "LNC", alpha = 0.65, k = 10))
+//' #approximate analytic value of mutual information
+//' -0.5*log(1-cor(x,y)^2)
+//'
+//' z <- rnorm(1000)
+//' #redundancy I(x;y;z) is approximately the same as I(x;y)
+//' knn_mi(cbind(x,y,z),c(1,1,1),options = list(method = "LNC", alpha = c(0.5,0,0,0), k = 10))
+//' #mutual information I((x,y);z) is approximately 0
+//' knn_mi(cbind(x,y,z),c(2,1),options = list(method = "LNC", alpha = c(0.5,0.65,0), k = 10))
+//'
 //' @export
 //'
 // [[Rcpp::export]]

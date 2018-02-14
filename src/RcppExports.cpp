@@ -6,19 +6,6 @@
 
 using namespace Rcpp;
 
-// get_nearest_neighbors
-void get_nearest_neighbors(arma::mat X, arma::mat& X_dist, arma::imat& X_inds, int k);
-RcppExport SEXP _rmi_get_nearest_neighbors(SEXP XSEXP, SEXP X_distSEXP, SEXP X_indsSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type X_dist(X_distSEXP);
-    Rcpp::traits::input_parameter< arma::imat& >::type X_inds(X_indsSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    get_nearest_neighbors(X, X_dist, X_inds, k);
-    return R_NilValue;
-END_RCPP
-}
 // nearest_neighbors
 Rcpp::List nearest_neighbors(arma::mat data, int k);
 RcppExport SEXP _rmi_nearest_neighbors(SEXP dataSEXP, SEXP kSEXP) {
@@ -59,7 +46,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rmi_get_nearest_neighbors", (DL_FUNC) &_rmi_get_nearest_neighbors, 4},
     {"_rmi_nearest_neighbors", (DL_FUNC) &_rmi_nearest_neighbors, 2},
     {"_rmi_knn_mi", (DL_FUNC) &_rmi_knn_mi, 3},
     {"_rmi_parse_split_vector", (DL_FUNC) &_rmi_parse_split_vector, 4},

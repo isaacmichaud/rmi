@@ -2,22 +2,51 @@
 % Please edit documentation in R/RcppExports.R
 \name{knn_mi}
 \alias{knn_mi}
-\title{mutual information function}
+\title{kNN Mutual Information Estimators}
 \usage{
 knn_mi(data, splits, options)
 }
 \arguments{
-\item{x}{numeric vector}
+\item{data}{matrix. Each row is an observation.}
 
-\item{low}{lower bound}
+\item{splits}{vector. Describes which sets of columns in \code{data} to compute the mutual information between. For example, to compute mutual information between two variables use \code{splits = c(1,1)}. To compute \emph{redundancy} among multiple random variables use \code{splits = rep(1,ncol(data))}. To compute the mutual information between two random vector list the dimensions of each vector.}
 
-\item{high}{upper bound}
-
-\item{res}{bounded numeric vector}
+\item{options}{list. Specifies estimator and necessary parameters. See Details.}
 }
 \value{
-bounded numeric vector
+estimated mutual information
 }
 \description{
-mutual information function
+Computes mutual information based on the distribution of nearest neighborhood distances as described by Kraskov, et. al (2004).
+}
+\section{Details}{
+ Current types of methods that are available are methods LNC, KSG1 and KSG2
+\code{list(method = "KSG2", k = 6)}
+}
+
+\section{Author}{
+
+Isaac Michaud, North Carolina State University, \email{ijmichau@ncsu.edu}
+}
+
+\section{References}{
+
+Gao, Shuyang, Greg Ver Steeg, and Aram Galstyan. 2015. "Efficient estimation of mutual information for strongly dependent variables." Artificial Intelligence and Statistics: 277-286.
+
+Kraskov, Alexander, Harald Stögbauer, and Peter Grassberger. 2004. "Estimating mutual information." Physical review E 69(6): 066138.
+}
+
+\examples{
+set.seed(123)
+x <- rnorm(1000)
+y <- x + rnorm(1000)
+knn_mi(cbind(x,y),c(1,1),options = list(method = "KSG2", k = 6))
+
+set.seed(123)
+x <- rnorm(1000)
+y <- 100*x + rnorm(1000)
+knn_mi(cbind(x,y),c(1,1),options = list(method = "LNC", alpha = 0.65, k = 10))
+#approximate analytic value of mutual information
+-0.5*log(1-cor(x,y)^2)
+
 }
