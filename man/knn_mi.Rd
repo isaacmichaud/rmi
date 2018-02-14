@@ -33,7 +33,7 @@ Isaac Michaud, North Carolina State University, \email{ijmichau@ncsu.edu}
 
 Gao, Shuyang, Greg Ver Steeg, and Aram Galstyan. 2015. "Efficient estimation of mutual information for strongly dependent variables." Artificial Intelligence and Statistics: 277-286.
 
-Kraskov, Alexander, Harald Stögbauer, and Peter Grassberger. 2004. "Estimating mutual information." Physical review E 69(6): 066138.
+Kraskov, Alexander, Harald Stogbauer, and Peter Grassberger. 2004. "Estimating mutual information." Physical review E 69(6): 066138.
 }
 
 \examples{
@@ -48,5 +48,11 @@ y <- 100*x + rnorm(1000)
 knn_mi(cbind(x,y),c(1,1),options = list(method = "LNC", alpha = 0.65, k = 10))
 #approximate analytic value of mutual information
 -0.5*log(1-cor(x,y)^2)
+
+z <- rnorm(1000)
+#redundancy I(x;y;z) is approximately the same as I(x;y)
+knn_mi(cbind(x,y,z),c(1,1,1),options = list(method = "LNC", alpha = c(0.5,0,0,0), k = 10))
+#mutual information I((x,y);z) is approximately 0
+knn_mi(cbind(x,y,z),c(2,1),options = list(method = "LNC", alpha = c(0.5,0.65,0), k = 10))
 
 }

@@ -1,4 +1,4 @@
-#' compute nearest neighbors according to infinity norm
+#' compute nearest neighbors using infinity norm
 #'
 #' @param data matrix. Each row is an observation.
 #' @param k integer. Number of neighbors to observe.
