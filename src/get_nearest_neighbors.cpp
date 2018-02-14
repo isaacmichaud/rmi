@@ -45,17 +45,7 @@ void get_nearest_neighbors(arma::mat X,
   return;
 }
 
-//' compute nearest neighbors according to infinity norm
-//'
-//' @param data matrix. Each row is an observation.
-//' @param k integer. Number of neighbors to observe.
-//' @return List of distances and indices of k nearest neighbors of each point in \code{data}.
-//' @examples
-//' set.seed(123)
-//' X <- cbind(1:10)
-//' nearest_neighbors(X,3)
-//' @export
-//'
+
 // [[Rcpp::export]]
 Rcpp::List nearest_neighbors(arma::mat data, int k) {
   int K = k+1;
