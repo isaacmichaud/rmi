@@ -2,7 +2,7 @@
 % Please edit documentation in R/nearest_neighbors.R
 \name{nearest_neighbors}
 \alias{nearest_neighbors}
-\title{compute nearest neighbors according to infinity norm}
+\title{compute nearest neighbors using infinity norm}
 \usage{
 nearest_neighbors(data, k)
 }
@@ -15,7 +15,7 @@ nearest_neighbors(data, k)
 List of distances and indices of k nearest neighbors of each point in \code{data}.
 }
 \description{
-compute nearest neighbors according to infinity norm
+compute nearest neighbors using infinity norm
 }
 \examples{
 X <- cbind(1:10)
