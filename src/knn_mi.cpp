@@ -60,9 +60,14 @@ double knn_mi(arma::mat data,
   arma::colvec alpha(vars+1);
 
   if (method == "LNC") {
-    lnc    = 1;
-    method = "KSG2";
-    alpha  = Rcpp::as<arma::colvec>(options["alpha"]);
+    lnc     = 1;
+    method  = "KSG2";
+    alpha   = Rcpp::as<arma::colvec>(options["alpha"]);
+    for (int i = 0; i < alpha.size(); i++) {
+      if (alpha(i) >= 0) {
+        alpha(i) = log(alpha(i));
+      }
+    }
   }
 
   arma::imat nn_inds(N,K);
@@ -166,8 +171,8 @@ double knn_mi(arma::mat data,
         //skip any coordinates with 1 variable
         if (d_end(j) - d_start(j) == 0) continue;
         proposed_correction = lnc_compute(data, nn_inds, i, d_start(j), d_end(j));
-        if (proposed_correction < log(alpha(j))) {
-          // printf("%d : %f, %f\n",j,proposed_correction,log(alpha(0)));
+        if (proposed_correction < alpha(j)) {
+          //printf("%d : %f, %f\n",j,proposed_correction,log(alpha(0)));
           if (j == 0) {
             lnc_correction = lnc_correction - proposed_correction;
           } else {
