@@ -4,13 +4,9 @@
 #' @param k
 #' @param cached
 #'
-#' @return
+#' @return x
 #' @export
-#'
-#' @useDynLib rmi
-#' @importFrom Rcpp sourceCpp
-#'
-#' @examples
+#' @examples x+y = 2
 compute_lnc_threshold <- function(d,k,cached=TRUE) {
  if ((d <= 100) & (k <= 100)) {
     return(rmi::alpha_thresholds[d,k])

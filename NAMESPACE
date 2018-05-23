@@ -3,5 +3,4 @@
 export(compute_lnc_threshold)
 export(knn_mi)
 export(nearest_neighbors)
-importFrom(Rcpp,sourceCpp)
-useDynLib("")
+useDynLib(rmi)

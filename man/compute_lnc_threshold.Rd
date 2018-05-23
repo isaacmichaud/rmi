@@ -9,6 +9,12 @@ compute_lnc_threshold(d, k, cached = TRUE)
 \arguments{
 \item{cached}{}
 }
+\value{
+x
+}
 \description{
 Title
+}
+\examples{
+x+y = 2
 }

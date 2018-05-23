@@ -42,6 +42,7 @@ nearest_neighbors <- function(data, k) {
 #' knn_mi(cbind(x,y,z),c(2,1),options = list(method = "LNC", alpha = c(0.5,0.65,0), k = 10))
 #'
 #' @export
+#' @useDynLib rmi
 #'
 knn_mi <- function(data, splits, options) {
     .Call('_rmi_knn_mi', PACKAGE = 'rmi', data, splits, options)
