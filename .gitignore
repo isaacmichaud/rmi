@@ -8,3 +8,4 @@
 *.so
 *.o-*
 *.dat
+src/rmi.so
