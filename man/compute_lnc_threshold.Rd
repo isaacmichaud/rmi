@@ -2,19 +2,24 @@
 % Please edit documentation in R/compute_lnc_threshold.R
 \name{compute_lnc_threshold}
 \alias{compute_lnc_threshold}
-\title{Title}
+\title{Compute LNC Threshold}
 \usage{
-compute_lnc_threshold(d, k, cached = TRUE)
+compute_lnc_threshold(d, k, n)
 }
 \arguments{
-\item{cached}{}
+\item{d}{number of dimenions}
+
+\item{k}{number of neighbors}
+
+\item{n}{sample size}
 }
 \value{
-x
+log-scale value of alpha value will be on the interval (-inf,0)
 }
 \description{
-Title
+Computes alpha tuning parameters using a fitted surrogate model. Uses the minimize MSE method of calulcating alpha
 }
 \examples{
-x+y = 2
+compute_lnc_threshold(2,5,1000)
+
 }
