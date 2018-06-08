@@ -2,14 +2,36 @@
 % Please edit documentation in R/compute_lnc_threshold.R
 \name{optimize_mse}
 \alias{optimize_mse}
-\title{Optimize MSE of alpha MI estimators}
+\title{Optimize MSE of alpha MI estimators
+Uses Gaussian process (GP) optimization to stochastically minimize the mean squared error of the LNC estimator}
 \usage{
 optimize_mse(rho, N, M, d, k, lower = -5, upper = -1e-10, num_iter = 25,
   init_size = 20, diagnostics = FALSE, cluster = NULL)
 }
 \arguments{
-\item{cluster}{}
+\item{rho}{Correlation of reference distribution}
+
+\item{N}{Sample size}
+
+\item{M}{Monte Carlo sample size}
+
+\item{d}{Dimension}
+
+\item{k}{Neighboorhood order}
+
+\item{lower}{Lower bound of constrained optimization}
+
+\item{upper}{Upper bound of constrained optimization}
+
+\item{num_iter}{Number of iterations of GP optimization}
+
+\item{init_size}{Number of initial evaluation for estimating GP}
+
+\item{diagnostics}{FALSE feature not implimented yet}
+
+\item{cluster}{A FORK cluster from parallel package}
 }
 \description{
 Optimize MSE of alpha MI estimators
+Uses Gaussian process (GP) optimization to stochastically minimize the mean squared error of the LNC estimator
 }

@@ -32,6 +32,7 @@ compute_lnc_threshold <- function(d, k, n) {
 #' @param init_size Number of initial evaluation for estimating GP
 #' @param diagnostics FALSE feature not implimented yet
 #' @param cluster  A FORK cluster from parallel package
+#' @export
 optimize_mse <- function(rho,
                          N,
                          M,
@@ -146,6 +147,57 @@ estimate_mse <- function(k       = 5,
   return(mean((mi_mse_est - analytic_mi(d,rho))^2))
 }
 
+
+estimate_compare <- function(k       = 5,
+                         alpha   = 0,
+                         d       = 2,
+                         rho     = 0.0,
+                         epsilon = 0.01,
+                         N       = 1000,
+                         M       = 100,
+                         cluster = NULL) {
+
+  inputs <- matrix(c(d,k,alpha,rho,N,epsilon),ncol=6,nrow=M,byrow=TRUE)
+
+  compute_mi <- function(input) {
+    require(mnormt)
+    simulate_mvn <- function(n,d,rho) { #could we utilize a seperate function for all of this?
+      require(mnormt)
+      Sigma       <- matrix(rho,d,d)
+      diag(Sigma) <- 1
+      return(rmnorm(n,mean(0,d),Sigma))
+    }
+    d = input[1]
+    K = input[2]
+    a = input[3]
+    r = input[4]
+    N = input[5]
+    epsilon = input[6]
+    browser()
+    data1   <- simulate_mvn(N,d,rho = r)
+    mi1     <- rmi::knn_mi(data1,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d))))
+    data2   <- simulate_mvn(N,d,rho = r+epsilon)
+    mi2     <- rmi::knn_mi(data2,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d))))
+    return((mi2 > mi1)*1)
+  }
+
+  if (is.null(cluster)) {
+    mi_mse_est <- rep(0,M)
+    for (i in 1:M) {
+      mi_mse_est[i] <- compute_mi(inputs[i,])
+    }
+  } else {
+    mi_mse_est <- parApply(cluster,inputs,1,compute_mi)
+  }
+
+  analytic_mi <- function(d,rho) { #this would be a good function to break off too
+    Sigma       <- matrix(rho,d,d)
+    diag(Sigma) <- 1
+    return(-0.5*log(det(Sigma)))
+  }
+
+  return(-mean(mi_mse_est))
+}
 
 
 
