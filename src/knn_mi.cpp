@@ -103,7 +103,7 @@ double knn_mi(arma::mat data,
           }
           if (dist < epsilon) N_x++;
         }
-        digamma_x = digamma_x + boost::math::digamma(N_x+1);
+        digamma_x = digamma_x + boost::math::digamma(N_x);
       }
     }
    // printf("mi: %f, digamma:%f",mi,digamma_x);
@@ -140,7 +140,7 @@ double knn_mi(arma::mat data,
           //  printf("dist:%f\n",dist);
           if (dist <= epsilon) N_x++;
         }
-        digamma_x = digamma_x + boost::math::digamma(N_x);
+        digamma_x = digamma_x + boost::math::digamma(N_x-1);
       }
     }
     //printf("mi: %f, digamma:%f",mi,digamma_x);
