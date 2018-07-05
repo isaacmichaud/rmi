@@ -165,23 +165,41 @@ double knn_mi(arma::mat data,
   //   }
   // }
 
-  if (lnc == 1) { //LNC corrections
+  if (lnc == 1) { //LNC corrections (new version)
     for (int i = 0; i < N; i++) {
-      for (int j = 0; j <= vars; j++) {
-        //skip any coordinates with 1 variable
-        if (d_end(j) - d_start(j) == 0) continue;
-        proposed_correction = lnc_compute(data, nn_inds, i, d_start(j), d_end(j));
-        if (proposed_correction < alpha(j)) {
-          //printf("%d : %f, %f\n",j,proposed_correction,log(alpha(0)));
-          if (j == 0) {
-            lnc_correction = lnc_correction - proposed_correction;
-          } else {
-            lnc_correction = lnc_correction + proposed_correction;
-          }
+      if (d_end(0) - d_start(0) == 0) continue; //probably will never get triggered (check that joint is 2 dimension or more)
+      proposed_correction = lnc_compute(data, nn_inds, i, d_start(0), d_end(0));
+      if (proposed_correction < alpha(0)) { //apply joint correction
+        lnc_correction = lnc_correction - proposed_correction;
+        for (int j = 1; j <= vars; j++) {
+          //skip any coordinates with 1 variable
+          if (d_end(j) - d_start(j) == 0) continue;
+          proposed_correction = lnc_compute(data, nn_inds, i, d_start(j), d_end(j));
+          if (proposed_correction < alpha(j)) {
+              lnc_correction = lnc_correction + proposed_correction;
+           }
         }
       }
     }
   }
+
+  // if (lnc == 1) { //LNC corrections
+  //   for (int i = 0; i < N; i++) {
+  //     for (int j = 0; j <= vars; j++) {
+  //       //skip any coordinates with 1 variable
+  //       if (d_end(j) - d_start(j) == 0) continue;
+  //       proposed_correction = lnc_compute(data, nn_inds, i, d_start(j), d_end(j));
+  //       if (proposed_correction < alpha(j)) {
+  //         //printf("%d : %f, %f\n",j,proposed_correction,log(alpha(0)));
+  //         if (j == 0) {
+  //           lnc_correction = lnc_correction - proposed_correction;
+  //         } else {
+  //           lnc_correction = lnc_correction + proposed_correction;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   return mi + lnc_correction/(double)N;
 }
