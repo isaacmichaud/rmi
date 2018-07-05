@@ -1,0 +1,69 @@
+---
+title: "Bivariate Relationships"
+author: "Isaac J. Michaud"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+
+- Never uses retina figures
+- Has a smaller default figure size
+- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+
+\citet{gao2015efficient} utilized test cases from \citet{reshef2011detecting}. They involve a parameter $X \sim \mathcal{U}[0,1]$ and $\eta \sim \mathcal{U}[-\beta/2,\beta/2]$, $Y = f(X) + \eta$ for varying functional relationships. As $\beta$ is decreased, the mutual information between $X$ and $Y$ increases. Figure~\ref{bivariate_relations}(a) uses $f(X) = X$. Figure~\ref{bivariate_relations}(b) uses $f(X) = 2X^2$. Figure~\ref{bivariate_relations}(c) uses $f(X) = 5^X$. As the complexity of the nonlinearity increases the estimators have more difficulty estimating mutual information. This is expected, especially in the case of Figure~\ref{bivariate_relations}(d) which uses $f(X) = \sin(4\pi X)$, because it becomes more difficult to differentiate between variability due to the functional relation and the error. LNC outperforms KSG in all cases for high mutual information relationships. 
+
+Bivariate relationships between random variables related through functional transformations are plotted for varying error variances. The transformations used are: (a) linear, (b) quadratic, (c) exponential, and (d) sinusoidal. The mutual information increases as the error variance is reduced. LNC is more accurate at estimating the analytic mutual information in all cases. The maximum value of the KSG estimators here is approximately $\psi(1000) - \psi(10) \approx 4.66$ because $N=1000$ and $k = 10$.
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

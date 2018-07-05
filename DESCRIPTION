@@ -13,4 +13,7 @@ RoxygenNote: 6.0.1
 LinkingTo: Rcpp, RcppArmadillo, BH
 Imports: Rcpp, RcppArmadillo, BH
 Depends: Rcpp
-Suggests: testthat, DiceKriging, DiceOptim, DiceDesign, parallel
+Suggests: testthat, DiceKriging, DiceOptim, DiceDesign, parallel,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
