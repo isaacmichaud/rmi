@@ -49,7 +49,7 @@ optimize_mse <- function(rho,
     rmi::estimate_mse(k=k,alpha=alpha,d=d,rho=rho,N=N,M=M,cluster=cluster)
   }
 
-  noise.var <- 0.1 #don't know what to do with this......
+  noise.var <- 0.1
 
   # Generate initial exploration data
   alpha.doe   <- lower*as.data.frame(DiceDesign::lhsDesign(init_size, 1)$design)
@@ -58,6 +58,7 @@ optimize_mse <- function(rho,
   cat("Evaluating initial design points...")
 
   for (i in 1:init_size) {
+  	cat(sprintf("%d, "),i)
     y.tilde[i] <- objective_func(alpha.doe[[1]][i])
   }
 
@@ -113,19 +114,17 @@ estimate_mse <- function(k       = 5,
 
   compute_mi <- function(input) {
 
-    require(mnormt)
-    simulate_mvn <- function(n,d,rho) { #could we utilize a seperate function for all of this?
-      require(mnormt)
+    simulate_mvn <- function(n,d,rho) {
       Sigma       <- matrix(rho,d,d)
       diag(Sigma) <- 1
-      return(rmnorm(n,mean(0,d),Sigma))
+      return(rmi::rmvn(n,mean(0,d),Sigma))
     }
     d = input[1]
     K = input[2]
     a = input[3]
     r = input[4]
     N = input[5]
-    data   <- simulate_mvn(N,d,rho = r)
+    data   <- rmi::simulate_mvn(N,d,rho = r)
     return(rmi::knn_mi(data,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d)))))
   }
 
@@ -148,56 +147,7 @@ estimate_mse <- function(k       = 5,
 }
 
 
-estimate_compare <- function(k       = 5,
-                         alpha   = 0,
-                         d       = 2,
-                         rho     = 0.0,
-                         epsilon = 0.01,
-                         N       = 1000,
-                         M       = 100,
-                         cluster = NULL) {
 
-  inputs <- matrix(c(d,k,alpha,rho,N,epsilon),ncol=6,nrow=M,byrow=TRUE)
-
-  compute_mi <- function(input) {
-    require(mnormt)
-    simulate_mvn <- function(n,d,rho) { #could we utilize a seperate function for all of this?
-      require(mnormt)
-      Sigma       <- matrix(rho,d,d)
-      diag(Sigma) <- 1
-      return(rmnorm(n,mean(0,d),Sigma))
-    }
-    d = input[1]
-    K = input[2]
-    a = input[3]
-    r = input[4]
-    N = input[5]
-    epsilon = input[6]
-    browser()
-    data1   <- simulate_mvn(N,d,rho = r)
-    mi1     <- rmi::knn_mi(data1,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d))))
-    data2   <- simulate_mvn(N,d,rho = r+epsilon)
-    mi2     <- rmi::knn_mi(data2,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d))))
-    return((mi2 > mi1)*1)
-  }
-
-  if (is.null(cluster)) {
-    mi_mse_est <- rep(0,M)
-    for (i in 1:M) {
-      mi_mse_est[i] <- compute_mi(inputs[i,])
-    }
-  } else {
-    mi_mse_est <- parApply(cluster,inputs,1,compute_mi)
-  }
-
-  analytic_mi <- function(d,rho) { #this would be a good function to break off too
-    Sigma       <- matrix(rho,d,d)
-    diag(Sigma) <- 1
-    return(-0.5*log(det(Sigma)))
-  }
-
-  return(-mean(mi_mse_est))
-}
 
 
 
