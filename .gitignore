@@ -9,4 +9,3 @@
 *.o-*
 *.dat
 src/rmi.so
-inst/doc
