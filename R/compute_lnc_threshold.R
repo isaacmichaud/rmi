@@ -58,7 +58,7 @@ optimize_mse <- function(rho,
   cat("Evaluating initial design points...")
 
   for (i in 1:init_size) {
-  	cat(sprintf("%d, "),i)
+  	cat(sprintf("%d, ",i))
     y.tilde[i] <- objective_func(alpha.doe[[1]][i])
   }
 
@@ -108,7 +108,8 @@ estimate_mse <- function(k       = 5,
                          rho     = 0.0,
                          N       = 1000,
                          M       = 100,
-                         cluster = NULL) {
+                         cluster = NULL,
+                         save_result = FALSE) {
 
   inputs <- matrix(c(d,k,alpha,rho,N),ncol=5,nrow=M,byrow=TRUE)
 
@@ -124,7 +125,7 @@ estimate_mse <- function(k       = 5,
     a = input[3]
     r = input[4]
     N = input[5]
-    data   <- rmi::simulate_mvn(N,d,rho = r)
+    data   <- rmi:::simulate_mvn(N,d,rho = r)
     return(rmi::knn_mi(data,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d)))))
   }
 
@@ -142,8 +143,12 @@ estimate_mse <- function(k       = 5,
     diag(Sigma) <- 1
     return(-0.5*log(det(Sigma)))
   }
-
-  return(mean((mi_mse_est - analytic_mi(d,rho))^2))
+  my_mse <- mean((mi_mse_est - analytic_mi(d,rho))^2)
+  if (save_result) {
+    save_val <- c(k, alpha, d, rho, N, M, my_mse)
+    write(save_val,file = "lnc_alpha_archive.txt",append = TRUE)
+  }
+  return(my_mse)
 }
 
 

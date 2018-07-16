@@ -28,5 +28,5 @@ rmvn <- function(n,mu = rep(0,d),cov_mat) {
 simulate_mvn <- function(n,d,rho) {
   Sigma       <- matrix(rho,d,d)
   diag(Sigma) <- 1
-  return(rmi::rmvn(n,mean(0,d),Sigma))
+  return(rmi:::rmvn(n,mean(0,d),Sigma))
 }
