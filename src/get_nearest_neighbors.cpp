@@ -1,5 +1,4 @@
 #include <RcppArmadillo.h>
-#include "flann/flann.hpp"
 
 using namespace std;
 
@@ -11,49 +10,39 @@ void get_nearest_neighbors(arma::mat X,
   int N = X.n_rows;
   int K = k + 1;
 
-  arma::mat query(d, N);
-  arma::mat temp_q(X.begin(), N, d, false);
-  query = arma::trans(temp_q); //transpose
-  flann::Matrix<double> q_flann(query.memptr(), N, d);
-  flann::Matrix<double> ref_flann(query.memptr(), N, d);
+  arma::mat temp_dist(N,N);
+  arma::uvec temp_inds(N);
 
-  //Setting the flann index params
-  flann::IndexParams params;
-  params = flann::LinearIndexParams();
+  double dist;
 
-  flann::Index<flann::MaxDistance<double> > index(ref_flann, params);
-  index.buildIndex();
-  flann::Matrix<int> indices_flann(new int[N * K], N, K);
-  flann::Matrix<double> dists_flann(new double[N * K], N, K);
-  flann::SearchParams search_params;
+  for (int i = 0; i < N; i++) { //for each point in sample
+    for (int j = i; j < N; j++) {
+      if (i == j) {
+        temp_dist(i,j) = 0.0;
+      } else {
+        dist = 0.0;
+        for (int m = 0; m < d; m++) {
+          if (dist < abs(X(i,m) - X(j,m))) {
+            dist = abs(X(i,m) - X(j,m));
+          }
+        }
+        temp_dist(i,j) = dist;
+        temp_dist(j,i) = dist;
+      }
+    }
+  }
 
-  //search_params.cores = 10;
-  //search_params.checks = 100;
-
-  index.knnSearch(q_flann, indices_flann, dists_flann, K, search_params);
-
-  arma::imat indices(indices_flann.ptr(), K, N, true);
-  arma::mat dists(dists_flann.ptr(), K, N, true);
-
-  delete[] indices_flann.ptr();
-  delete[] dists_flann.ptr();
-
-  X_inds = indices.t();
-  X_dist = dists.t();
+  for (int i = 0; i < N; i++) {
+    temp_inds        = arma::sort_index(temp_dist.row(i));
+    temp_dist.row(i) = arma::sort(temp_dist.row(i));
+    for (int j = 0; j < K; j++) {
+     X_dist(i,j) = temp_dist(i,j);
+     X_inds(i,j) = temp_inds(j);
+    }
+  }
 
   return;
 }
-
-
-/**
- C++ function that gets nearest neighbors
-Isaac Michaud - 02/14/2018
-
-@param  data matrix
-@param  k number of neighbors
-@return list with C++ indices and max norm distances
-*/
-
 
 // [[Rcpp::export]]
 Rcpp::List nearest_neighbors(arma::mat data, int k) {
@@ -61,7 +50,6 @@ Rcpp::List nearest_neighbors(arma::mat data, int k) {
   int N = data.n_rows;
   arma::imat nn_inds(N,K);
   arma::mat  nn_dist(N,K);
-
   get_nearest_neighbors(data, nn_dist, nn_inds,k);
   return Rcpp::List::create(Rcpp::Named("nn_dist") = nn_dist,
                             Rcpp::Named("nn_inds") = nn_inds);

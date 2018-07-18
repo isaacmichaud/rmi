@@ -24,7 +24,35 @@ $$ I(X;Y) =\int \int \log \left \{ \frac{f_{xy}(x,y)}{f_{x}(x)f_{y}(y)} \right \
 
 where $f_x$ and $f_y$ are the marginal densities of $X$ and $Y$, respectively. If $X$ and $Y$ are independent then $f(x,y)_{xy} = f_x(x)f_y(y)$ and $I(X;Y) = 0$, so knowledge of one variable provides no information about the other. If $X$ and $Y$ are dependent then $I(X;Y) > 0$ and represents the expected difference in entropy between $Y$ and $Y|X$ and as such is also the expected Kullback-Leibler divergence between the marginal density $f_y$ and the conditional density $f_{y|x}$. \@ref(eq:binom)
 
+
+ \begin{equation}\label{mi}
+ I(X;Y) =\int \int \log \left \{ \frac{f_{xy}(x,y)}{f_{x}(x)f_{y}(y)} \right \} f_{xy}(x,y) \, dy dx, 
+ \end{equation}
+ where $f_x$ and $f_y$ are the marginal densities of $X$ and $Y$, respectively. If $X$ and $Y$ are independent, then $f_{xy}(x,y) = f_x(x)f_y(y)$ and $I(X;Y) = 0$, so knowledge of one variable provides no information about the other. 
+
+For linear models with normal errors, the mutual information criterion is the same as D-optimality see appendix for the derivation. 
+Maximum entropy sampling selects design points whose predictive distribution has the highest observed entropy. Suppose we have the following model $$y_i = f(x_i;\theta) + \epsilon_i$$ where $epsilon_i$ are independent and identically distributed. Then if the function $f$ is known the conditional entropy $H(Y(x)|\theta) = H(\epsilon)$ which is constant for all design points.
+
+For sequential designs, instead of looking at mutual information between $\theta$ and $\textbf{y}$, we need to look at the mutual information between a single observation $y_n$ and $\theta$ conditioned on $\textbf{y}_{n-1}$,
+
+\begin{eqnarray*}
+I(\pi (y_n,\theta |\textbf{y}_{n-1})) &=& \int \int \int \log \left \{ \frac{\pi (y_n,\theta |\textbf{y}_{n-1})}{\pi (y_n |\textbf{y}_{n-1})\pi (\theta |\textbf{y}_{n-1})} \right \}\pi (y_n,\theta |\textbf{y}_{n-1})\pi(\textbf{y}_{n-1}) dy_n d\theta d\textbf{y}_{n-1}\\
+ &=& \frac{1}{2}log \left \{ \frac{\det(\mathbf{X}_n'\mathbf{X_n} + R)}{\det(\mathbf{X}_{n-1}'\mathbf{X}_{n-1} + R)} \right \} \\
+ &=& \frac{1}{2}log \left \{(1 + x'(\mathbf{X}_{n-1}'\mathbf{X}_{n-1} + R)^{-1}x) \right \},
+ \end{eqnarray*}
+where the last equality is derived from the matrix determinant lemma. The derivation of these results are in Appendix \ref{con-mutinfo}. Maximizing the conditional mutual information is then equivalent to maximizing
+
+Beginning with the simplest statistical model, let us consider a linear regression model with independent and identically distributed Gaussian error with known variance $\sigma^2$. Let $\eta = \{x_i\}_{i=1}^n$ be an experimental design. The design matrix corresponding to $\eta$ will be denoted $X(\eta)$. The response is modeled as 
+$$\mathbf{y} \sim norm(\mathbf{X}(\eta)\beta,\sigma^2 I_n),$$ 
+where $I_n$ is the identity matrix of dimension $n$. Assuming $\beta$ has a prior distribution of $norm(0,\sigma^2 R^{-1})$ where $R$ is a positive definite matrix, then the posterior distribution of $\beta$ is
+$$\beta|\mathbf{y} \sim norm((\mathbf{X}'\mathbf{X} + R)^{-1}X'\mathbf{y},\sigma^2(\mathbf{X}'\mathbf{X} + R)^{-1}).$$
+The derivation of the posterior distribution is presented in Appendix~\ref{posterior_beta}. The mutual information between $\theta$ and a sample of size $n$ is
+$$I( \pi(\theta,\mathbf{y})) = \int \int log \left ( \frac{\pi(\theta,\mathbf{y})}{\pi(\theta)\pi(\mathbf{y})} \right) \pi(\theta,\mathbf{y}) d\theta d\mathbf{y} = -k \log(\sigma) + \frac{1}{2}logdet(\mathbf{X}'\mathbf{X} + R).$$
+The derivation of this result is presented in Appendix~\ref{mutinfo-n}. Setting $R$ to the zero matrix assumes an improper prior and shows that the D-optimal design is also the design which maximizes mutual information. This correspondence is because the model is linear in the parameter $\beta$ and the design criterion is independent of the true value of $\beta$.  
+
 ## kNN Algorithms
+
+$$\hat{H}(X,Y) =  \psi(k) + \psi (N) + \log(c_{d_X}c_{d_Y}) + \frac{d_X+ d_Y}{N} \sum_{i=1}^N \log \epsilon(i)$$
 
 ### $KSG_1$
 
@@ -33,6 +61,11 @@ where $f_x$ and $f_y$ are the marginal densities of $X$ and $Y$, respectively. I
 ### $LNC$
 
 ### $iLNC$
+
+### Alpha Calibration
+To minimize MSE we are using a GP optimization method using EQI as an acquisition function. This provides a good balance for the stochastic optimization. Other methods that were tries were: particle swarm optimization, Nelder-Mead, and Brent's method. The last two were from R's \texttt{optim} function and the swarm was from package \texttt{pso}. These methods are meant to be deterministic function optimizers so I increase the Monte Carlo sample size, but they still under performed GP optimization. 
+
+Complicating factors include that range of the optimization. This can lead to suboptimal selection or failure to converge. We do not have any gradient information and finite-difference approximations were not found to be stable to get consistent convergence. Because the optimization is tricky, in the future we will create a surrogate to save computation time and effort that will interpolate the optimal $\alpha$ for cases we have not run through the optimizer. Depending on the values of $d$ and $k$ we will have to have to adjust the search window for the minimum.
 
 ### $LNN$ 
 

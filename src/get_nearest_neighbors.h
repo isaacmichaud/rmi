@@ -1,5 +1,4 @@
 #include <RcppArmadillo.h>
-#include "flann/flann.hpp"
 
 using namespace std;
 

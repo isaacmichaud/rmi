@@ -27,18 +27,25 @@ double lnc_compute(const arma::mat  & data,
   }
 
   // compute coordinate aligned volume
-  double rect_volume = 0;
+  double cord_log_dist = 0;
+  double rect_volume   = 0;
   arma::colvec rect_dist = arma::zeros(d);
-  for (int i = 0; i < K ; i++) {
+
+  for (int j = 0; j < d ; j++) { //initialize the pca_dist
+    rect_dist(j) = log(abs(X(0,j)));
+  }
+
+  for (int i = 1; i < K ; i++) {
     for (int j = 0; j < d ; j++) {
-      if (rect_dist(j) < abs(X(i,j))) {
-        rect_dist(j) = abs(X(i,j));
+      cord_log_dist = log(abs(X(i,j)));
+      if (rect_dist(j) < cord_log_dist) {
+        rect_dist(j) = cord_log_dist;
       }
     }
   }
 
   for (int j = 0; j < d ; j++) {
-    rect_volume = rect_volume + log(rect_dist(j));
+    rect_volume = rect_volume + rect_dist(j);
   }
 
   // compute PCA aligned volume
@@ -52,16 +59,22 @@ double lnc_compute(const arma::mat  & data,
 
   double pca_volume = 0;
   arma::colvec pca_dist = arma::zeros(d);
-  for (int i = 0; i < K ; i++) {
+
+  for (int j = 0; j < d ; j++) { //initialize the pca_dist
+    pca_dist(j) = log(abs(pca_data(0,j)));
+  }
+
+  for (int i = 1; i < K ; i++) {
     for (int j = 0; j < d ; j++) {
-      if (pca_dist(j) < abs(pca_data(i,j))) {
-        pca_dist(j) = abs(pca_data(i,j));
+      cord_log_dist = log(abs(pca_data(i,j)));
+      if (pca_dist(j) < cord_log_dist) {
+        pca_dist(j) = cord_log_dist;
       }
     }
   }
 
   for (int j = 0; j < d ; j++) {
-    pca_volume = pca_volume + log(pca_dist(j));
+    pca_volume = pca_volume + pca_dist(j);
   }
   //printf("LNC Call %d : %f, %f\n",index,pca_volume,rect_volume);
   correction = pca_volume - rect_volume;
