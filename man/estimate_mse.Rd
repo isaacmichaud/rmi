@@ -5,7 +5,7 @@
 \title{Estimate MSE of KNN Estimator}
 \usage{
 estimate_mse(k = 5, alpha = 0, d = 2, rho = 0, N = 1000, M = 100,
-  cluster = NULL, save_result = FALSE)
+  cluster = NULL)
 }
 \arguments{
 \item{alpha}{alpha if < 0 then log scale otherwise [0,1]}
