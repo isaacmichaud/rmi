@@ -30,7 +30,6 @@ compute_lnc_threshold <- function(d, k, n) {
 #' @param upper Upper bound of constrained optimization
 #' @param num_iter Number of iterations of GP optimization
 #' @param init_size Number of initial evaluation for estimating GP
-#' @param diagnostics FALSE feature not implimented yet
 #' @param cluster  A FORK cluster from parallel package
 #' @export
 optimize_mse <- function(rho,
@@ -42,7 +41,6 @@ optimize_mse <- function(rho,
                          upper = -1e-10,
                          num_iter = 25,
                          init_size = 20,
-                         diagnostics = FALSE, #I would like to add some diagnostic features in the future
                          cluster = NULL) {
 
   objective_func <- function(alpha) {
@@ -125,8 +123,8 @@ estimate_mse <- function(k       = 5,
     a = input[3]
     r = input[4]
     N = input[5]
-    data   <- rmi:::simulate_mvn(N,d,rho = r)
-    return(rmi::knn_mi(data,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d)))))
+    data   <- simulate_mvn(N,d,rho = r)
+    return(knn_mi(data,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d)))))
   }
 
   if (is.null(cluster)) {
@@ -135,7 +133,7 @@ estimate_mse <- function(k       = 5,
       mi_mse_est[i] <- compute_mi(inputs[i,])
     }
   } else {
-    mi_mse_est <- parApply(cluster,inputs,1,compute_mi)
+    mi_mse_est <- parallel::parApply(cluster,inputs,1,compute_mi)
   }
 
   analytic_mi <- function(d,rho) { #this would be a good function to break off too
