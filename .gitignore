@@ -9,3 +9,4 @@
 *.o-*
 *.dat
 src/rmi.so
+lnc_alpha_archive.txt
