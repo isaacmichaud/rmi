@@ -17,7 +17,6 @@ compute_lnc_threshold <- function(d, k, n) {
     return(NA)
 }
 
-
 #' Optimize MSE of alpha MI estimators
 #' Uses Gaussian process (GP) optimization to stochastically minimize the mean squared error of the LNC estimator
 #'
@@ -26,11 +25,8 @@ compute_lnc_threshold <- function(d, k, n) {
 #' @param M   Monte Carlo sample size
 #' @param d   Dimension
 #' @param k   Neighboorhood order
-#' @param lower Lower bound of constrained optimization
-#' @param upper Upper bound of constrained optimization
 #' @param num_iter Number of iterations of GP optimization
 #' @param init_size Number of initial evaluation for estimating GP
-#' @param diagnostics FALSE feature not implimented yet
 #' @param cluster  A FORK cluster from parallel package
 #' @export
 optimize_mse <- function(rho,
@@ -38,53 +34,75 @@ optimize_mse <- function(rho,
                          M,
                          d,
                          k,
-                         lower = -5,
+                         lower = -10,
                          upper = -1e-10,
-                         num_iter = 25,
+                         num_iter = 10,
                          init_size = 20,
                          diagnostics = FALSE, #I would like to add some diagnostic features in the future
-                         cluster = NULL) {
+                         cluster = NULL,
+                         verbose = TRUE) {
 
   objective_func <- function(alpha) {
-    rmi::estimate_mse(k=k,alpha=alpha,d=d,rho=rho,N=N,M=M,cluster=cluster)
+    estimate_mse(k=k,alpha=alpha,d=d,rho=rho,N=N,M=M,save_result = TRUE)
   }
 
-  noise.var <- 0.1
-
-  # Generate initial exploration data
-  alpha.doe   <- lower*as.data.frame(DiceDesign::lhsDesign(init_size, 1)$design)
-  y.tilde     <- rep(0,init_size)
-
-  cat("Evaluating initial design points...")
-
-  for (i in 1:init_size) {
-  	cat(sprintf("%d, ",i))
-    y.tilde[i] <- objective_func(alpha.doe[[1]][i])
+  #--- Find Transition Point ---#
+  rect      <- rbind(c(lower,upper))
+  out       <- NULL
+  progress  <- NULL
+  threshold <- NULL
+  X         <- NULL
+  Z         <- NULL
+  while (is.null(threshold)) {
+    Xcand  <- tgp::lhs(init_size, rect)
+    Xnew  <- tgp::dopt.gp(init_size, X = X, Xcand)$XX
+    X     <- rbind(X, Xnew)
+    new_Z <- NULL
+    for (i in seq_along(Xnew)) {
+      new_Z[i] <- objective_func(Xnew[i,])
+    }
+    Z   <- c(Z, new_Z)
+    out <- tgp::optim.step.tgp(objective_func, X=X, Z=Z, rect=rect, prev=out)
+    threshold <- tryCatch({out$obj$trees[[2]]$val[1]},error=function(e){NULL})
+    if (min(Z) > 0.5) {
+      rect[1] <- 2*rect[1]
+    }
   }
 
-  cat("Estimating kriging model...")
+  #--- Improve Design ---#
+  rect <- threshold + c(-1,1)
+  Xcand  <- tgp::lhs(init_size, rect)
+  Xnew  <- tgp::dopt.gp(init_size, X = X, Xcand)$XX
+  X     <- rbind(X, Xnew)
+  new_Z <- NULL
+  for (i in seq_along(Xnew)) {
+    new_Z[i] <- objective_func(Xnew[i,])
+  }
+  Z   <- c(Z, new_Z)
 
-  # Estimate kriging model
-  model <- DiceKriging::km(y~1, design=alpha.doe, response=data.frame(y=y.tilde),
-              covtype="matern5_2", optim.method = "gen", noise.var=rep(noise.var,init_size),
-              control=list(trace=FALSE))
+  #--- Adaptive Optimization ---#
+  for(j in 1:num_iter) {
 
-  optim.param <- list()
-  optim.param$quantile <- .9
+    out <- tgp::optim.step.tgp(objective_func, X=X, Z=Z, rect=rect, prev=out)
 
-  cat("Performing GP optimizations...")
+    ## add in the inputs, and newly sampled outputs
+    X <- rbind(X, out$X)
+    new_Z <- NULL
+    for (i in seq_along(out$X)) {
+      new_Z[i] <- objective_func(out$X[i,])
+    }
+    Z <- c(Z, new_Z)
 
-  optim.result <- DiceOptim::noisy.optimizer(optim.crit="EQI", optim.param=optim.param, model=model,
-                                  n.ite=num_iter, noise.var=noise.var, funnoise=objective_func,
-                                  lower=lower, upper=upper,
-                                  NoiseReEstimate=TRUE,
-                                  CovReEstimate=TRUE,
-                                  control=list(print.level = 0))
-
-  best.x    <- optim.result$best.x
-
-  return(best.x)
+    ## keep track of progress and best optimum
+    progress <- rbind(progress, out$progress)
+    if (verbose) {
+      print(paste(sprintf("Iteration %d of %d :",j,num_iter),print(out$progress$x1),sep = ""))
+    }
+  }
+  if (verbose) plot(out$obj)
+  return(out$progress$x1)
 }
+
 
 #' Estimate MSE of KNN Estimator
 #'
@@ -118,15 +136,15 @@ estimate_mse <- function(k       = 5,
     simulate_mvn <- function(n,d,rho) {
       Sigma       <- matrix(rho,d,d)
       diag(Sigma) <- 1
-      return(rmi::rmvn(n,mean(0,d),Sigma))
+      return(rmvn(n,mean(0,d),Sigma))
     }
     d = input[1]
     K = input[2]
     a = input[3]
     r = input[4]
     N = input[5]
-    data   <- rmi:::simulate_mvn(N,d,rho = r)
-    return(rmi::knn_mi(data,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d)))))
+    data   <- simulate_mvn(N,d,rho = r)
+    return(knn_mi(data,splits = rep(1,d), options = list(method="LNC",k=K,alpha=c(a,rep(0,d)))))
   }
 
   if (is.null(cluster)) {
