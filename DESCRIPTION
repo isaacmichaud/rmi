@@ -1,16 +1,16 @@
 Package: rmi
 Type: Package
-Title: Mutual information estimators
+Title: Mutual Information Estimators
 Version: 0.1.1
 Author: Isaac Michaud cre, aut
 Maintainer: Isaac Michaud <ijmichau@ncsu.edu>
-Description: More about what it does (maybe more than one line)
+Description: 
     Use four spaces when indenting paragraphs within the Description.
-License: LGPL-3 + file LICENCE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 LinkingTo: Rcpp, RcppArmadillo, BH
 Imports: Rcpp, RcppArmadillo, BH
 Depends: Rcpp
-Suggests: testthat, DiceKriging, DiceOptim, DiceDesign, parallel
+Suggests: testthat, parallel, tgp
