@@ -7,9 +7,9 @@
 simulate_mvn(n, d, rho)
 }
 \arguments{
-\item{n}{integer, sample size}
+\item{n}{number of observations}
 
-\item{d}{integer, dimension}
+\item{d}{number of dimension}
 
 \item{rho}{correlation of compound-symmetric covariance}
 }
@@ -19,6 +19,4 @@ Matrix (n x d) of random MVN draws
 \description{
 Calibration Random Multivariate Normal
 }
-\examples{
-simulat_mvn(100,10,0.6)
-}
+\keyword{internal}

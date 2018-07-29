@@ -2,20 +2,23 @@
 % Please edit documentation in R/nearest_neighbors.R
 \name{nearest_neighbors}
 \alias{nearest_neighbors}
-\title{compute nearest neighbors using infinity norm}
+\title{Compute Nearest Neighbors}
 \usage{
 nearest_neighbors(data, k)
 }
 \arguments{
-\item{data}{matrix. Each row is an observation.}
+\item{data}{Matrix of sample observations, each row is an observation.}
 
-\item{k}{integer. Number of neighbors to observe.}
+\item{k}{Neighborhood order.}
 }
 \value{
-List of distances and indices of k nearest neighbors of each point in \code{data}.
+List of distances and indices of the k-nearest neighbors of each point in \code{data}.
 }
 \description{
-compute nearest neighbors using infinity norm
+Computes the nearest neighbor distances and indices of a sample using the infinite norm.
+}
+\details{
+Nearest neighbors are computed using the brute-force method.
 }
 \examples{
 X <- cbind(1:10)

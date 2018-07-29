@@ -2,36 +2,37 @@
 % Please edit documentation in R/compute_lnc_threshold.R
 \name{optimize_mse}
 \alias{optimize_mse}
-\title{Optimize MSE of alpha MI estimators
-Uses Gaussian process (GP) optimization to stochastically minimize the mean squared error of the LNC estimator}
+\title{Optimize MSE of LNC Estimator}
 \usage{
-optimize_mse(rho, N, M, d, k, lower = -5, upper = -1e-10, num_iter = 25,
-  init_size = 20, diagnostics = FALSE, cluster = NULL)
+optimize_mse(rho, N, M, d, k, lower = -10, upper = -1e-10, num_iter = 10,
+  init_size = 20, cluster = NULL, verbose = TRUE)
 }
 \arguments{
-\item{rho}{Correlation of reference distribution}
+\item{rho}{Reference correlation.}
 
-\item{N}{Sample size}
+\item{N}{Sample size.}
 
-\item{M}{Monte Carlo sample size}
+\item{M}{Number of replications.}
 
-\item{d}{Dimension}
+\item{d}{Dimension.}
 
-\item{k}{Neighboorhood order}
+\item{k}{Neighboorhood order.}
 
-\item{lower}{Lower bound of constrained optimization}
+\item{lower}{Lower bound for optimization.}
 
-\item{upper}{Upper bound of constrained optimization}
+\item{upper}{Upper bound for optimization.}
 
-\item{num_iter}{Number of iterations of GP optimization}
+\item{num_iter}{Number of iterations of GP optimization.}
 
-\item{init_size}{Number of initial evaluation for estimating GP}
+\item{init_size}{Number of initial evaluation to estimating GP.}
 
-\item{diagnostics}{FALSE feature not implimented yet}
+\item{cluster}{A \code{parallel} cluster object.}
 
-\item{cluster}{A FORK cluster from parallel package}
+\item{verbose}{If \code{TRUE} then print runtime diagnostic output.}
 }
 \description{
-Optimize MSE of alpha MI estimators
-Uses Gaussian process (GP) optimization to stochastically minimize the mean squared error of the LNC estimator
+Gaussian process (GP) optimization is used to minimize the MSE of the LNC estimator with respect to the non-uniformity threshold parameter \code{alpha}. A normal distribution with compound-symmetric covariance is used as a reference distribution to optimize the MSE of LNC with respect to.
+}
+\details{
+The package \code{tgp} is used to fit a treed-gp to the MSE estimates of LNC. A treed-gp is used because the MSE of LNC with respect to \code{alpha} exhibits clear non-stationarity. A treed-gp is able to identify the function's different correlation lengths which improves optimization.
 }

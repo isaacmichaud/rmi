@@ -2,24 +2,40 @@
 % Please edit documentation in R/compute_lnc_threshold.R
 \name{estimate_mse}
 \alias{estimate_mse}
-\title{Estimate MSE of KNN Estimator}
+\title{Estimate MSE of LNC Estimator}
 \usage{
 estimate_mse(k = 5, alpha = 0, d = 2, rho = 0, N = 1000, M = 100,
-  cluster = NULL)
+  cluster = NULL, save_result = FALSE)
 }
 \arguments{
-\item{alpha}{alpha if < 0 then log scale otherwise [0,1]}
+\item{k}{Neighborhood order.}
 
-\item{d}{dimension}
+\item{alpha}{Non-uniformity threshold (see details).}
 
-\item{rho}{MVN correlation (compound systemtric)}
+\item{d}{Dimension.}
 
-\item{N}{sample size}
+\item{rho}{Reference correlation (see details).}
 
-\item{M}{replications (outer loop)}
+\item{N}{Sample size.}
 
-\item{cluster}{a parallel cluster object}
+\item{M}{Number of replications.}
+
+\item{cluster}{A \code{parallel} cluster object.}
+
+\item{save_result}{Save estimated MSE to a txt file for future analysis (see details).}
 }
 \description{
-This function computes the MSE for a given set of tuning parameter alpha, dimension, size of neighborhood
+Computes the MSE of the Local Non-Uniformity Correct (LNC) KSG estimator for a given value of the tuning parameter \code{alpha}, dimension, neighborhood order, and sample size.
+}
+\details{
+The parameter \code{alpha} controls the threshold for the application of the non-uniformity correction to a particular point's neighborhood. Roughly, \code{alpha} is the ratio of the PCA aligned neighborhood volume to the rectangularly aligned neighborhood volume below which indicates non-uniformity and the correction is applied.
+
+If \code{alpha < 0} then a log scale is assumed; otherwise [0,1] scale is used. \code{alpha > 1} are unacceptable values. A value of \code{alpha = 0} forces no correction and LNC reverts to the KSG estimator.
+
+The reference distribution that is assumed is a mean-zero multivariate normal distribution with a compound-symmetric covariance. The covariance matrix has a single correlation parametered supplied by \code{rho}.
+
+Because minimizing the MSE of the LNC estimator is a noisy optimization, it is useful to record observed MSE values for further analysis using different stochastic optimization methods. Setting \code{save_result = TRUE} will record all observed MSE values, along with input parameters, to a text file "lnc_alpha_archive.txt" to the working directory.
+}
+\examples{
+estimate_mse(N = 100,M = 2)
 }

@@ -2,23 +2,21 @@
 % Please edit documentation in R/rmvn.R
 \name{rmvn}
 \alias{rmvn}
-\title{Random Multivariate Normal (MVN)}
+\title{Random Multivariate Normal MVN Generator}
 \usage{
 rmvn(n, mu = rep(0, d), cov_mat)
 }
 \arguments{
-\item{n}{sample size}
+\item{n}{number of observations}
 
-\item{mu}{mean vector}
+\item{mu}{d dimensional mean vector}
 
-\item{cov_mat}{covariance matrix}
+\item{cov_mat}{d x d covariance matrix}
 }
 \value{
 Matrix (n x d) of random MVN draws
 }
 \description{
-Random Multivariate Normal (MVN)
+Random Multivariate Normal MVN Generator
 }
-\examples{
-mnormt::rmnorm(200,0, matrix(c(1,0.9,0.9,1),2,2))
-}
+\keyword{internal}
