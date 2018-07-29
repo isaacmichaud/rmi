@@ -7,21 +7,25 @@ nearest_neighbors <- function(data, k) {
 
 #' kNN Mutual Information Estimators
 #'
-#' Computes mutual information based on the distribution of nearest neighborhood distances as described by Kraskov, et. al (2004).
+#' Computes mutual information based on the distribution of nearest neighborhood distances. Method available are KSG1 and KSG2 as described by Kraskov, et. al (2004) and the Local Non-Uniformity Corrected (LNC) KSG as described by Gao, et. al (2015). The LNC method is based on KSG2  but with PCA volume corrections to adjust for observed non-uniformity of the local neighborhood of each point in the sample.
 #'
-#' @param  data matrix. Each row is an observation.
-#' @param  splits vector. Describes which sets of columns in \code{data} to compute the mutual information between. For example, to compute mutual information between two variables use \code{splits = c(1,1)}. To compute \emph{redundancy} among multiple random variables use \code{splits = rep(1,ncol(data))}. To compute the mutual information between two random vector list the dimensions of each vector.
-#' @param  options list. Specifies estimator and necessary parameters. See Details.
-#' @section Details: Current types of methods that are available are methods LNC, KSG1 and KSG2
-#' \code{list(method = "KSG2", k = 6)}
-#' @return estimated mutual information
+#' @param  data Matrix of sample observations, each row is an observation.
+#' @param  splits A vector that describes which sets of columns in \code{data} to compute the mutual information between. For example, to compute mutual information between two variables use \code{splits = c(1,1)}. To compute \emph{redundancy} among multiple random variables use \code{splits = rep(1,ncol(data))}. To compute the mutual information between two random vector list the dimensions of each vector.
+#' @param  options A list that specifies the estimator and its necessary parameters (see details).
+#' @section Details: Current available methods are LNC, KSG1 and KSG2.
+#'
+#' For KSG1 use: \code{options = list(method = "KSG1", k = 5)}
+#'
+#' For KSG2 use: \code{options = list(method = "KSG2", k = 5)}
+#'
+#' For LNC use: \code{options = list(method = "LNC", k = 10, alpha = 0.65)}, order needed \code{k > ncol(data)}.
+#'
 #' @section Author:
 #' Isaac Michaud, North Carolina State University, \email{ijmichau@ncsu.edu}
 #' @section References:
-#' Gao, Shuyang, Greg Ver Steeg, and Aram Galstyan. 2015. "Efficient estimation of mutual information for strongly dependent variables." Artificial Intelligence and Statistics: 277-286.
+#' Gao, S., Ver Steeg G., & Galstyan A. (2015). Efficient estimation of mutual information for strongly dependent variables. Artificial Intelligence and Statistics: 277-286.
 #'
-#' Kraskov, Alexander, Harald Stogbauer, and Peter Grassberger. 2004. "Estimating mutual information." Physical review E 69(6): 066138.
-#'
+#' Kraskov, A., Stogbauer, H., & Grassberger, P. (2004). Estimating mutual information. Physical review E 69(6): 066138.
 #' @examples
 #' set.seed(123)
 #' x <- rnorm(1000)

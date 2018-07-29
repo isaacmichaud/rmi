@@ -1,8 +1,11 @@
-#' compute nearest neighbors using infinity norm
+#' Compute Nearest Neighbors
 #'
-#' @param data matrix. Each row is an observation.
-#' @param k integer. Number of neighbors to observe.
-#' @return List of distances and indices of k nearest neighbors of each point in \code{data}.
+#' Computes the nearest neighbor distances and indices of a sample using the infinite norm.
+#'
+#' @param data Matrix of sample observations, each row is an observation.
+#' @param k Neighborhood order.
+#' @return List of distances and indices of the k-nearest neighbors of each point in \code{data}.
+#' @details Nearest neighbors are computed using the brute-force method.
 #' @examples
 #' X <- cbind(1:10)
 #' nearest_neighbors(X,3)

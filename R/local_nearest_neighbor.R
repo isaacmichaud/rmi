@@ -1,17 +1,17 @@
-#' LNN Entropy Estimator
+#' Local Nearest Neighbor (LNN) Entropy Estimator
 #'
-#' Local Nearest Neighbor entropy estimator using Gaussian kernel and kNN selected bandwidth. Entropy is estimated by taking
+#' Local Nearest Neighbor entropy estimator using Gaussian kernel and kNN selected bandwidth. Entropy is estimated by taking a Monte Carlo estimate using local kernel density estimate of the negative-log density.
 #'
-#' @param data matrix, each row is an observation
-#' @param k  order of the local kNN bandwidth selection
-#' @param tr number of neighbors to include in local density estimate (truncation)
-#' @param bw bandwidth (optional) manually fix bandwidth instead of using local kNN bandwidth selection
+#' @param data Matrix of sample observations, each row is an observation.
+#' @param k  Order of the local kNN bandwidth selection.
+#' @param tr Order of truncation (number of neighbors to include in entropy).
+#' @param bw Bandwidth (optional) manually fix bandwidth instead of using local kNN bandwidth selection.
 #'
 #' @section References:
 #'
 #' Loader, C. (1999). Local regression and likelihood. Springer Science & Business Media.
 #'
-#' Gao, W., Oh, S., & Viswanath, P. (2017). Density functional estimators with k-nearest neighbor bandwidths. IEEE International Symposium on Information Theory - Proceedings, 1, 1351–1355. https://doi.org/10.1109/ISIT.2017.8006749
+#' Gao, W., Oh, S., & Viswanath, P. (2017). Density functional estimators with k-nearest neighbor bandwidths. IEEE International Symposium on Information Theory - Proceedings, 1, 1351–1355.
 #'
 #' @examples
 #' set.seed(123)
@@ -25,7 +25,7 @@ lnn_entropy <- function(data, k = 5, tr = 30, bw=NULL) {
 
     #bandwidth selection is k, number of points used in the calculation is tr
     if (k > tr) {
-      stop("Unaccaptable Inuputs, k is larger than tr")
+      stop("Unaccaptable Inputs, k is larger than tr")
     }
 
     if (!is.matrix(data)) {
@@ -57,7 +57,7 @@ lnn_entropy <- function(data, k = 5, tr = 30, bw=NULL) {
       }
       Sigma = S2/S0 - (t(S1)%*%S1)/(S0^2)
 
-      if (is.nan(Sigma)) {
+      if (is.nan(det(Sigma))) {
         stop("Local covariance matrix was singular")
       }
 
@@ -88,19 +88,41 @@ lnn_entropy <- function(data, k = 5, tr = 30, bw=NULL) {
     return(NA)
 }
 
-#' LNN MI estimator
+#' Local Nearest Neighbor (LNN) MI Estimator
 #'
-#' Local nearest neighbor mutual information estimator using Gaussian kernel and kNN bandwidth selection. Plug-in estimate of mutual information using LNN entropy estimator.
+#' Local Nearest Neighbor (LNN) mutual information estimator by Gao et al. 2017. This estimator uses the LNN entropy (\code{lnn_entropy}) estimator into the mutual information identity.
 #'
-#' @param data
-#' @param splits
-#' @param k  order of the local kNN bandwidth selection
-#' @param tr number of neighbors to include in local density estimate (truncation)
+#' @param  data Matrix of sample observations, each row is an observation.
+#' @param  splits A vector that describes which sets of columns in \code{data} to compute the mutual information between. For example, to compute mutual information between two variables use \code{splits = c(1,1)}. To compute \emph{redundancy} among multiple random variables use \code{splits = rep(1,ncol(data))}. To compute the mutual information between two random vector list the dimensions of each vector.
+#' @param k  Order of the local kNN bandwidth selection.
+#' @param tr Order of truncation (number of neighbors to include in the local density estimation).
+#'
+#' @section References:
+#'
+#' Gao, W., Oh, S., & Viswanath, P. (2017). Density functional estimators with k-nearest neighbor bandwidths. IEEE International Symposium on Information Theory - Proceedings, 1, 1351–1355.
+#'
+#' @examples
+#' set.seed(123)
+#' x <- rnorm(1000)
+#' y <- x + rnorm(1000)
+#' lnn_mi(cbind(x,y),c(1,1))
 #'
 #' @export
 lnn_mi <- function(data, splits, k = 5, tr = 30) {
-  xy_E <- lnn_entropy(cbind(x,y),k=k,tr=tr)
-   x_E <- lnn_entropy(x,k=k,tr=tr)
-   y_E <- lnn_entropy(y,k=k,tr=tr)
-   return(x_E + y_E - xy_E)
+
+  if (length(splits) != 2) {
+    stop("splits must have length 2, multivariate redundency not implimented yet")
+  }
+
+  joint_E    <- lnn_entropy(data,k=k,tr=tr)
+  marginal_E <- 0*splits
+
+  marg_1 <- as.matrix(data[,1:splits[1]],ncol=splits[1])
+  marg_2 <- as.matrix(data[,-(1:splits[1])],ncol=splits[1])
+
+  marginal_E[1] <- lnn_entropy(marg_1,k=k,tr=tr)
+  marginal_E[2] <- lnn_entropy(marg_2,k=k,tr=tr)
+
+  mi_result <- sum(marginal_E) - joint_E
+  return(mi_result)
 }

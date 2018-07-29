@@ -6,13 +6,12 @@
 #'
 #' @return Matrix (n x d) of random MVN draws
 #'
-#' @examples
-#' rmvn(200,0, matrix(c(1,0.9,0.9,1),2,2))
+#' @keywords internal
 rmvn <- function(n,mu = rep(0,d),cov_mat) {
   if (n <= 0) stop("n must be 1 or larger")
   S <- chol(cov_mat)
   d <- ncol(S)
-  Y <- (matrix(rnorm(n*d),n,d) %*% S) + mu
+  Y <- (matrix(stats::rnorm(n*d),n,d) %*% S) + mu
   return(Y)
 }
 
@@ -24,8 +23,7 @@ rmvn <- function(n,mu = rep(0,d),cov_mat) {
 #'
 #' @return Matrix (n x d) of random MVN draws
 #'
-#' @examples
-#' simulat_mvn(100,10,0.6)
+#' @keywords internal
 simulate_mvn  <- function(n,d,rho) {
   Sigma       <- matrix(rho,d,d)
   diag(Sigma) <- 1
