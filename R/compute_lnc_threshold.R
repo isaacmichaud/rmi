@@ -101,15 +101,12 @@ optimize_mse <- function(rho,
 #' @param N Sample size.
 #' @param M Number of replications.
 #' @param cluster A \code{parallel} cluster object.
-#' @param save_result Save estimated MSE to a txt file for future analysis (see details).
 #'
 #' @details The parameter \code{alpha} controls the threshold for the application of the non-uniformity correction to a particular point's neighborhood. Roughly, \code{alpha} is the ratio of the PCA aligned neighborhood volume to the rectangularly aligned neighborhood volume below which indicates non-uniformity and the correction is applied.
 #'
 #' If \code{alpha < 0} then a log scale is assumed; otherwise [0,1] scale is used. \code{alpha > 1} are unacceptable values. A value of \code{alpha = 0} forces no correction and LNC reverts to the KSG estimator.
 #'
 #' The reference distribution that is assumed is a mean-zero multivariate normal distribution with a compound-symmetric covariance. The covariance matrix has a single correlation parametered supplied by \code{rho}.
-#'
-#' Because minimizing the MSE of the LNC estimator is a noisy optimization, it is useful to record observed MSE values for further analysis using different stochastic optimization methods. Setting \code{save_result = TRUE} will record all observed MSE values, along with input parameters, to a text file "lnc_alpha_archive.txt" to the working directory.
 #'
 #' @export
 #'
@@ -121,18 +118,12 @@ estimate_mse <- function(k       = 5,
                          rho     = 0.0,
                          N       = 1000,
                          M       = 100,
-                         cluster = NULL,
-                         save_result = FALSE) {
+                         cluster = NULL) {
 
   inputs <- matrix(c(d,k,alpha,rho,N),ncol=5,nrow=M,byrow=TRUE)
 
   compute_mi <- function(input) {
 
-    simulate_mvn <- function(n,d,rho) {
-      Sigma       <- matrix(rho,d,d)
-      diag(Sigma) <- 1
-      return(rmvn(n,mean(0,d),Sigma))
-    }
     d <- input[1]
     K <- input[2]
     a <- input[3]
@@ -157,10 +148,6 @@ estimate_mse <- function(k       = 5,
     return(-0.5*log(det(Sigma)))
   }
   my_mse <- mean((mi_mse_est - analytic_mi(d,rho))^2)
-  if (save_result) {
-    save_val <- c(k, alpha, d, rho, N, M, my_mse)
-    write(save_val,file = "lnc_alpha_archive.txt",append = TRUE)
-  }
   return(my_mse)
 }
 
