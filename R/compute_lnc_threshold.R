@@ -30,7 +30,7 @@ optimize_mse <- function(rho,
                          verbose = TRUE) {
 
   objective_func <- function(alpha) {
-    estimate_mse(k=k,alpha=alpha,d=d,rho=rho,N=N,M=M,save_result = TRUE)
+    estimate_mse(k=k,alpha=alpha,d=d,rho=rho,N=N,M=M)
   }
 
   #--- Find Transition Point ---#
