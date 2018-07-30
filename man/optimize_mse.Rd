@@ -4,8 +4,8 @@
 \alias{optimize_mse}
 \title{Optimize MSE of LNC Estimator}
 \usage{
-optimize_mse(rho, N, M, d, k, lower = -10, upper = -1e-10, num_iter = 10,
-  init_size = 20, cluster = NULL, verbose = TRUE)
+optimize_mse(rho, N, M, d, k, lower = -10, upper = -1e-10,
+  num_iter = 10, init_size = 20, cluster = NULL, verbose = TRUE)
 }
 \arguments{
 \item{rho}{Reference correlation.}

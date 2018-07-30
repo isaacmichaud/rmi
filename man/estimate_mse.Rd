@@ -4,8 +4,8 @@
 \alias{estimate_mse}
 \title{Estimate MSE of LNC Estimator}
 \usage{
-estimate_mse(k = 5, alpha = 0, d = 2, rho = 0, N = 1000, M = 100,
-  cluster = NULL)
+estimate_mse(k = 5, alpha = 0, d = 2, rho = 0, N = 1000,
+  M = 100, cluster = NULL)
 }
 \arguments{
 \item{k}{Neighborhood order.}
