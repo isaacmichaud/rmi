@@ -6,7 +6,7 @@
 #' @param N   Sample size.
 #' @param M   Number of replications.
 #' @param d   Dimension.
-#' @param k   Neighboorhood order.
+#' @param k   Neighborhood order.
 #' @param lower Lower bound for optimization.
 #' @param upper Upper bound for optimization.
 #' @param num_iter Number of iterations of GP optimization.
@@ -14,7 +14,7 @@
 #' @param cluster A \code{parallel} cluster object.
 #' @param verbose If \code{TRUE} then print runtime diagnostic output.
 #'
-#' @details The package \code{tgp} is used to fit a treed-gp to the MSE estimates of LNC. A treed-gp is used because the MSE of LNC with respect to \code{alpha} exhibits clear non-stationarity. A treed-gp is able to identify the function's different correlation lengths which improves optimization.
+#' @details The package \code{tgp} is used to fit a treed-GP to the MSE estimates of LNC. A treed-GP is used because the MSE of LNC with respect to \code{alpha} exhibits clear non-stationarity. A treed-GP is able to identify the function's different correlation lengths which improves optimization.
 #'
 #' @export
 optimize_mse <- function(rho,
@@ -102,11 +102,11 @@ optimize_mse <- function(rho,
 #' @param M Number of replications.
 #' @param cluster A \code{parallel} cluster object.
 #'
-#' @details The parameter \code{alpha} controls the threshold for the application of the non-uniformity correction to a particular point's neighborhood. Roughly, \code{alpha} is the ratio of the PCA aligned neighborhood volume to the rectangularly aligned neighborhood volume below which indicates non-uniformity and the correction is applied.
+#' @details The parameter \code{alpha} controls the threshold for the application of the non-uniformity correction to a particular point's neighborhood. Roughly, \code{alpha} is the ratio of the PCA aligned neighborhood volume to the rectangular aligned neighborhood volume below which indicates non-uniformity and the correction is applied.
 #'
 #' If \code{alpha < 0} then a log scale is assumed; otherwise [0,1] scale is used. \code{alpha > 1} are unacceptable values. A value of \code{alpha = 0} forces no correction and LNC reverts to the KSG estimator.
 #'
-#' The reference distribution that is assumed is a mean-zero multivariate normal distribution with a compound-symmetric covariance. The covariance matrix has a single correlation parametered supplied by \code{rho}.
+#' The reference distribution that is assumed is a mean-zero multivariate normal distribution with a compound-symmetric covariance. The covariance matrix has a single correlation parameter supplied by \code{rho}.
 #'
 #' @export
 #'

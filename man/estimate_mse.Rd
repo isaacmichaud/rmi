@@ -5,7 +5,7 @@
 \title{Estimate MSE of LNC Estimator}
 \usage{
 estimate_mse(k = 5, alpha = 0, d = 2, rho = 0, N = 1000, M = 100,
-  cluster = NULL, save_result = FALSE)
+  cluster = NULL)
 }
 \arguments{
 \item{k}{Neighborhood order.}
@@ -21,20 +21,16 @@ estimate_mse(k = 5, alpha = 0, d = 2, rho = 0, N = 1000, M = 100,
 \item{M}{Number of replications.}
 
 \item{cluster}{A \code{parallel} cluster object.}
-
-\item{save_result}{Save estimated MSE to a txt file for future analysis (see details).}
 }
 \description{
 Computes the MSE of the Local Non-Uniformity Correct (LNC) KSG estimator for a given value of the tuning parameter \code{alpha}, dimension, neighborhood order, and sample size.
 }
 \details{
-The parameter \code{alpha} controls the threshold for the application of the non-uniformity correction to a particular point's neighborhood. Roughly, \code{alpha} is the ratio of the PCA aligned neighborhood volume to the rectangularly aligned neighborhood volume below which indicates non-uniformity and the correction is applied.
+The parameter \code{alpha} controls the threshold for the application of the non-uniformity correction to a particular point's neighborhood. Roughly, \code{alpha} is the ratio of the PCA aligned neighborhood volume to the rectangular aligned neighborhood volume below which indicates non-uniformity and the correction is applied.
 
 If \code{alpha < 0} then a log scale is assumed; otherwise [0,1] scale is used. \code{alpha > 1} are unacceptable values. A value of \code{alpha = 0} forces no correction and LNC reverts to the KSG estimator.
 
-The reference distribution that is assumed is a mean-zero multivariate normal distribution with a compound-symmetric covariance. The covariance matrix has a single correlation parametered supplied by \code{rho}.
-
-Because minimizing the MSE of the LNC estimator is a noisy optimization, it is useful to record observed MSE values for further analysis using different stochastic optimization methods. Setting \code{save_result = TRUE} will record all observed MSE values, along with input parameters, to a text file "lnc_alpha_archive.txt" to the working directory.
+The reference distribution that is assumed is a mean-zero multivariate normal distribution with a compound-symmetric covariance. The covariance matrix has a single correlation parameter supplied by \code{rho}.
 }
 \examples{
 estimate_mse(N = 100,M = 2)
