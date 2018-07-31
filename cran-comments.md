@@ -16,6 +16,8 @@ This is a new release, so there are no reverse dependencies.
 ## Resubmission
 This is a resubmission. In this version I have: 
 
+* Removed quotations around citations in the description field
+
 * Made description field less redundant
 
 * Added references to the description field 
