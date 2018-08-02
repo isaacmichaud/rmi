@@ -1,3 +1,5 @@
+# rmi 0.1.2
+
 # rmi 0.1.1
 
 * Initial public release of `rmi` package
