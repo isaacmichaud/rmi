@@ -1,6 +1,7 @@
 #include <RcppArmadillo.h>
+#include "Rmath.h"
 #include <cmath>
-#include <boost/math/special_functions/digamma.hpp>
+//#include <boost/math/special_functions/digamma.hpp>
 #include "parse_split_vector.h"
 #include "get_nearest_neighbors.h"
 #include "lnc_compute.h"
@@ -63,6 +64,8 @@ double knn_mi(arma::mat data,
   int vars  = splits.length();
   arma::colvec alpha(vars+1);
 
+  int lnc_marginal = 0;
+
   if (method == "LNC") {
     lnc     = 1;
     method  = "KSG2";
@@ -77,6 +80,8 @@ double knn_mi(arma::mat data,
   arma::imat nn_inds(N,K);
   arma::mat nn_dist(N,K);
 
+  arma::irowvec temp_inds(N);
+
   arma::icolvec d(vars+1);
   arma::icolvec d_start(vars+1);
   arma::icolvec d_end(vars+1);
@@ -84,8 +89,8 @@ double knn_mi(arma::mat data,
   parse_split_vector(splits,d,d_start,d_end);
   get_nearest_neighbors(data, nn_dist, nn_inds,k);
   double digamma_x = 0;
-  double mi = (vars-1)*boost::math::digamma(N) + boost::math::digamma(k);
-  int N_x;
+  double mi = (vars-1)*R::digamma(static_cast<double>(N)) + R::digamma(static_cast<double>(k));
+  double N_x;
   double epsilon;
   double dist;
   double proposed_correction;
@@ -107,7 +112,7 @@ double knn_mi(arma::mat data,
           }
           if (dist < epsilon) N_x++;
         }
-        digamma_x = digamma_x + boost::math::digamma(N_x);
+        digamma_x = digamma_x + R::digamma(N_x);
       }
     }
    // printf("mi: %f, digamma:%f",mi,digamma_x);
@@ -116,6 +121,16 @@ double knn_mi(arma::mat data,
 
   if (method == "KSG2") { //ksg2
     for (int i = 0; i < N; i++) { // for point i
+
+      lnc_marginal = 0;
+      if (lnc == 1) {
+        proposed_correction = lnc_compute(data, nn_inds.row(i), d_start(0), d_end(0));
+        if (proposed_correction < alpha(0)) { //apply joint correction
+          lnc_correction = lnc_correction - proposed_correction;
+          lnc_marginal   = 1;
+        }
+      }
+
       for (int j = 1; j <= vars; j++) { // count marginal sum for jth block
         N_x = 0;
         epsilon = 0;
@@ -142,9 +157,22 @@ double knn_mi(arma::mat data,
             }
           }
           //  printf("dist:%f\n",dist);
-          if (dist <= epsilon) N_x++;
+          if (dist <= epsilon) {
+            N_x++;
+            temp_inds(N_x-1) = m;
+          }
         }
-        digamma_x = digamma_x + boost::math::digamma(N_x-1);
+
+        digamma_x = digamma_x + R::digamma(N_x-1);
+
+        if (lnc_marginal == 1) {
+          arma::irowvec subset = temp_inds.subvec(0,N_x-1);
+          subset              = arma::shuffle(subset);
+          proposed_correction = lnc_compute(data, subset, d_start(j), d_end(j));
+          if (proposed_correction < alpha(j)) {
+            lnc_correction = lnc_correction + proposed_correction;
+          }
+        }
       }
     }
     //printf("mi: %f, digamma:%f",mi,digamma_x);
@@ -168,24 +196,6 @@ double knn_mi(arma::mat data,
   //     }
   //   }
   // }
-
-  if (lnc == 1) { //LNC corrections (new version)
-    for (int i = 0; i < N; i++) {
-      if (d_end(0) - d_start(0) == 0) continue; //probably will never get triggered (check that joint is 2 dimension or more)
-      proposed_correction = lnc_compute(data, nn_inds, i, d_start(0), d_end(0));
-      if (proposed_correction < alpha(0)) { //apply joint correction
-        lnc_correction = lnc_correction - proposed_correction;
-        for (int j = 1; j <= vars; j++) {
-          //skip any coordinates with 1 variable
-          if (d_end(j) - d_start(j) == 0) continue;
-          proposed_correction = lnc_compute(data, nn_inds, i, d_start(j), d_end(j));
-          if (proposed_correction < alpha(j)) {
-              lnc_correction = lnc_correction + proposed_correction;
-           }
-        }
-      }
-    }
-  }
 
   // if (lnc == 1) { //LNC corrections
   //   for (int i = 0; i < N; i++) {

@@ -9,3 +9,5 @@
 *.o-*
 *.dat
 src/rmi.so
+
+*.rds

@@ -2,8 +2,7 @@
 using namespace std;
 
 double lnc_compute(const arma::mat  & data,
-                   const arma::imat & nn_inds,
-                   int index,
+                   const arma::irowvec & nn_inds,
                    int start_ind,
                    int end_ind) {
   // initial declarations
@@ -16,13 +15,13 @@ double lnc_compute(const arma::mat  & data,
   // center the data
   for (int i = 0; i < K ; i++) {
     for (int j = 0; j < d ; j++) {
-      mean(j) = mean(j) + data(nn_inds(index,i),j)/K;
+      mean(j) = mean(j) + data(nn_inds(i),j)/K;
     }
   }
 
   for (int i = 0; i < K ; i++) {
     for (int j = 0; j < d ; j++) {
-      X(i,j) = data(nn_inds(index,i),j) - mean(j);
+      X(i,j) = data(nn_inds(i),j) - mean(j);
     }
   }
 
