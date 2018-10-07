@@ -166,11 +166,16 @@ double knn_mi(arma::mat data,
         digamma_x = digamma_x + R::digamma(N_x-1);
 
         if (lnc_marginal == 1) {
-          arma::irowvec subset = temp_inds.subvec(0,N_x-1);
-          subset              = arma::shuffle(subset);
-          proposed_correction = lnc_compute(data, subset, d_start(j), d_end(j));
-          if (proposed_correction < alpha(j)) {
-            lnc_correction = lnc_correction + proposed_correction;
+          if (d_end(j) - d_start(j) == 0) {
+            continue;
+          } else {
+            arma::irowvec subset = temp_inds.subvec(0,N_x-1);
+            subset              = arma::shuffle(subset);
+            proposed_correction = lnc_compute(data, subset, d_start(j), d_end(j));
+            //printf("mi: %d,%d",i,j);
+            if (proposed_correction < alpha(j)) {
+              lnc_correction = lnc_correction + proposed_correction;
+            }
           }
         }
       }

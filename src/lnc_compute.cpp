@@ -6,7 +6,8 @@ double lnc_compute(const arma::mat  & data,
                    int start_ind,
                    int end_ind) {
   // initial declarations
-  int K = nn_inds.n_cols;
+  int K = nn_inds.n_cols; //may want to change this to length
+  //printf("LNC Call %d\n",K);
   int d = (end_ind - start_ind) + 1;
   arma::colvec mean = arma::zeros(d);
   arma::mat X       = arma::zeros(K,d);
