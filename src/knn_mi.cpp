@@ -169,9 +169,18 @@ double knn_mi(arma::mat data,
           if (d_end(j) - d_start(j) == 0) {
             continue;
           } else {
-            arma::irowvec subset = temp_inds.subvec(0,N_x-1);
-            subset              = arma::shuffle(subset);
-            proposed_correction = lnc_compute(data, subset, d_start(j), d_end(j));
+            //printf("mi: %f,%d \n \n",N_x,j);
+            //Rcpp::Rcout << temp_inds << "\n \n";
+            //Rcpp::Rcout << "1\n";
+            arma::irowvec subset = temp_inds.subvec(0,static_cast<int>(N_x-1));
+            //Rcpp::Rcout << subset << "\n";
+            //Rcpp::Rcout << "2\n";
+            subset               = arma::shuffle(subset);
+            //Rcpp::Rcout << "3\n";
+            //Rcpp::Rcout << "K:" << K << "\n";
+            subset               = subset.subvec(0,K-1);
+            //Rcpp::Rcout << "4\n";
+            proposed_correction  = lnc_compute(data, subset, d_start(j), d_end(j));
             //printf("mi: %d,%d",i,j);
             if (proposed_correction < alpha(j)) {
               lnc_correction = lnc_correction + proposed_correction;
